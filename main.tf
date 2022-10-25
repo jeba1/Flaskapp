@@ -1,14 +1,6 @@
 provider "aws" {
     region = "us-east-2"
 }
-data "aws_iam_role" "ssm" {
-  name = "ssm"
-}
-resource "aws_iam_instance_profile" "SsmDynamo" {
-    name = "SsmDynamo"
-    role = data.aws_iam_role.ssm.name
-}
-
 resource "aws_vpc" "dev" {
   cidr_block = "10.1.0.0/20"
   enable_dns_support = true
@@ -87,7 +79,7 @@ ingress {
     from_port        = 443
     to_port          = 443
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    cidr_blocks      = [aws_vpc.dev.cidr_block]
   }
   
   egress {
@@ -112,7 +104,7 @@ resource "aws_security_group" "alb_sg" {
     from_port        = 443
     to_port          = 443
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    cidr_blocks      = [aws_vpc.dev.cidr_block]
   }
   egress {
     from_port        = 0
@@ -132,10 +124,10 @@ resource "aws_instance" "ec2_host1" {
   instance_type = "t2.micro"
   subnet_id = aws_subnet.public1.id
   associate_public_ip_address = true
-  iam_instance_profile = aws_iam_instance_profile.SsmDynamo.name
   vpc_security_group_ids = [aws_security_group.instance_sg.id]
-  user_data = "${file("user_data.sh")}"
+  user_data = file("data.sh")
   
+
   tags = {
     Name = "ec2_host1"
   }
@@ -144,11 +136,10 @@ resource "aws_instance" "ec2_host1" {
 resource "aws_instance" "ec2_host2" {
   ami           = "ami-089a545a9ed9893b6"
   instance_type = "t2.micro"
-  subnet_id = aws_subnet.public2.id 
+  subnet_id = aws_subnet.public2.id
   associate_public_ip_address = true
-  iam_instance_profile = aws_iam_instance_profile.SsmDynamo.name
   vpc_security_group_ids = [aws_security_group.instance_sg.id]
-  user_data = "${file("user_data.sh")}"
+  user_data = file("data.sh")
   
 
   tags = {
