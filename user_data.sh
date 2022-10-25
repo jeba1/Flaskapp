@@ -8,7 +8,7 @@ cd Flaskapp
 sudo mkdir ~/app/src
 cp app.py requirements.txt test_candidates.py ~/app/src
 export TC_DYNAMO_TABLE=Candidates
-cp gunicorn /etc/systemd/system/gunicorn.service
+sudo cp gunicorn /etc/systemd/system/gunicorn.service
 sudo systemctl daemon-reload
 sudo systemctl start gunicorn-
 sudo systemctl enable gunicorn
