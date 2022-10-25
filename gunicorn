@@ -1,0 +1,10 @@
+After=network.target
+
+[Service]
+User=ssm-user
+Group=ssm-user
+WorkingDirectory=/home/ssm-user/app/src
+ExecStart=/usr/local/bin/gunicorn app:candidates_app --bind 0.0.0.0:8000
+
+[Install]
+WantedBy=multi-user.target
